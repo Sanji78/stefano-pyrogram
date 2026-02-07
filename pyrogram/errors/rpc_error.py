@@ -52,14 +52,9 @@ class RPCError(Exception):
         except (ValueError, TypeError):
             self.value = value
 
-        #if is_unknown:
-        #    with open("unknown_errors.txt", "a", encoding="utf-8") as f:
-        #        f.write(f"{datetime.now()}\t{value}\t{rpc_name}\n")
         if is_unknown:
-            import logging
-            logging.getLogger("pyrogram.errors").warning(
-                "Unknown RPC error: %s %s %s", datetime.now(), value, rpc_name
-            )
+            with open("unknown_errors.txt", "a", encoding="utf-8") as f:
+                f.write(f"{datetime.now()}\t{value}\t{rpc_name}\n")
             
     @staticmethod
     def raise_it(rpc_error: "raw.types.RpcError", rpc_type: Type[TLObject]):
