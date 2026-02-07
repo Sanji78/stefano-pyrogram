@@ -27,6 +27,9 @@ from hashlib import md5
 from pathlib import PurePath
 from typing import Union, BinaryIO, Callable
 
+import aiofiles
+import aiofiles.os
+
 import pyrogram
 from pyrogram import StopTransmission
 from pyrogram import raw
@@ -112,18 +115,25 @@ class SaveFile:
 
             part_size = 512 * 1024
 
-            if isinstance(path, (str, PurePath)):
-                fp = open(path, "rb")
+            # Determine if we need async file operations
+            is_path = isinstance(path, (str, PurePath))
+            
+            if is_path:
+                # Use async file operations to avoid blocking I/O
+                fp = await aiofiles.open(path, "rb")
+                file_name = str(path)
+                # Get file size using async operations
+                await fp.seek(0, os.SEEK_END)
+                file_size = await fp.tell()
+                await fp.seek(0)
             elif isinstance(path, io.IOBase):
                 fp = path
+                file_name = getattr(fp, "name", "file.jpg")
+                fp.seek(0, os.SEEK_END)
+                file_size = fp.tell()
+                fp.seek(0)
             else:
                 raise ValueError("Invalid file. Expected a file path as string or a binary (not text) file pointer")
-
-            file_name = getattr(fp, "name", "file.jpg")
-
-            fp.seek(0, os.SEEK_END)
-            file_size = fp.tell()
-            fp.seek(0)
 
             if file_size == 0:
                 raise ValueError("File size equals to 0 B")
@@ -149,10 +159,16 @@ class SaveFile:
             try:
                 await session.start()
 
-                fp.seek(part_size * file_part)
+                if is_path:
+                    await fp.seek(part_size * file_part)
+                else:
+                    fp.seek(part_size * file_part)
 
                 while True:
-                    chunk = fp.read(part_size)
+                    if is_path:
+                        chunk = await fp.read(part_size)
+                    else:
+                        chunk = fp.read(part_size)
 
                     if not chunk:
                         if not is_big and not is_missing_part:
@@ -222,5 +238,5 @@ class SaveFile:
 
                 await session.stop()
 
-                if isinstance(path, (str, PurePath)):
-                    fp.close()
+                if is_path:
+                    await fp.close()
