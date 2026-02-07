@@ -63,8 +63,13 @@ identity (bot API alternative) using Python.
 pip3 install pyrogram
 ```
 
-### Resources
+## ❤️ Donate
+If this project helps you, consider buying me a coffee:  
+**[PayPal](https://www.paypal.me/elenacapasso80)**.
 
-- Check out the docs at https://docs.pyrogram.org to learn more about Pyrogram, get started right
-away and discover more in-depth material for building your client applications.
-- Join the official channel at https://t.me/pyrogram and stay tuned for news, updates and announcements.
+..and yes... 😊 the paypal account is correct. Thank you so much!
+
+---
+
+## 📜 License
+[MIT](LICENSE.md)
