@@ -39,7 +39,7 @@ if len(argv) > 1 and argv[1] in ["bdist_wheel", "install", "develop"]:
 
 setup(
     name="stefano-pyrogram",
-    version="2.1.0",
+    version="2.2.0",
     description="Elegant, modern and asynchronous Telegram MTProto API framework in Python for users and bots",
     long_description=readme,
     long_description_content_type="text/markdown",
